@@ -1,3 +1,16 @@
+/**
+ * API Endpoints Test Suite
+ * 
+ * This test file covers the main API endpoints:
+ * - Health check endpoint (GET /health)
+ * - Task listing endpoint (GET /tasks)
+ * - Task creation endpoint (POST /tasks)
+ * - Task update endpoint (PATCH /tasks/:id)
+ * 
+ * Tests verify correct HTTP status codes, response formats, error handling,
+ * and database interactions for all endpoints.
+ */
+
 const request = require('supertest');
 const express = require('express');
 const db = require('./db');
