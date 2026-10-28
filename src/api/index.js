@@ -1,3 +1,4 @@
+// Express API server for managing tasks with CRUD endpoints
 const express = require('express');
 const db = require('./db');
 
