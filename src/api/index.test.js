@@ -1,3 +1,6 @@
+// Test suite for the API endpoints. Tests the health check endpoint and the tasks API,
+// including successful responses, empty results, and error handling with a mocked database.
+
 const request = require('supertest');
 const app = require('./index');
 const db = require('./db');
