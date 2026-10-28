@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
+// GET /health — health check endpoint
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
