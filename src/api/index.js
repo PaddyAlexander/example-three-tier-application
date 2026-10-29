@@ -1,4 +1,4 @@
-// API entry point
+// Express API entry point: serves the /health check and task CRUD endpoints backed by Postgres.
 const express = require('express');
 const db = require('./db');
 
