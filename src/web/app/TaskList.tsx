@@ -5,6 +5,7 @@ import { Task, toggleTask, deleteTask } from './actions';
 
 type SortOption = 'created_at' | 'completed' | 'title';
 type OrderOption = 'asc' | 'desc';
+type FilterOption = 'all' | 'active' | 'completed';
 
 interface TaskListProps {
   initialTasks: Task[];
@@ -16,6 +17,8 @@ export default function TaskList({ initialTasks, initialSort = 'created_at', ini
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [sortBy, setSortBy] = useState<SortOption>(initialSort);
   const [sortOrder, setSortOrder] = useState<OrderOption>(initialOrder);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState<FilterOption>('all');
 
   // Load sort preference from localStorage on mount
   useEffect(() => {
@@ -68,8 +71,40 @@ export default function TaskList({ initialTasks, initialSort = 'created_at', ini
     return sortOrder === 'asc' ? '↑' : '↓';
   };
 
+  const query = searchQuery.trim().toLowerCase();
+  const visibleTasks = tasks.filter((task) =>
+    (filter === 'all' || (filter === 'active' ? !task.completed : task.completed)) &&
+    task.title.toLowerCase().includes(query)
+  );
+
   return (
     <>
+      <div className="mb-4 flex gap-2 items-center flex-wrap">
+        <input
+          type="search"
+          placeholder="Search tasks…"
+          aria-label="Search tasks"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          className="px-3 py-1 text-sm rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100"
+        />
+        {(['all', 'active', 'completed'] as FilterOption[]).map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => setFilter(option)}
+            aria-pressed={filter === option}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              filter === option
+                ? 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900'
+                : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600'
+            }`}
+          >
+            {option === 'all' ? 'All' : option === 'active' ? 'Active' : 'Completed'}
+          </button>
+        ))}
+      </div>
+
       {/* Sort controls */}
       <div className="mb-4 flex gap-2 items-center flex-wrap">
         <span className="text-sm text-zinc-600 dark:text-zinc-400">Sort by:</span>
@@ -110,7 +145,10 @@ export default function TaskList({ initialTasks, initialSort = 'created_at', ini
         {tasks.length === 0 && (
           <li className="text-zinc-400 text-center py-8">No tasks yet. Add one above!</li>
         )}
-        {tasks.map((task) => (
+        {tasks.length > 0 && visibleTasks.length === 0 && (
+          <li className="text-zinc-400 text-center py-8">No tasks match your search/filter.</li>
+        )}
+        {visibleTasks.map((task) => (
           <li
             key={task.id}
             className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3"
