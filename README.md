@@ -64,8 +64,8 @@ The API is not exposed directly, but you can reach it through the web container 
 |--------|------|-------------|
 | GET | `/health` | Health check |
 | GET | `/tasks` | List all tasks |
-| POST | `/tasks` | Create a task (`{ "title": "..." }`) |
-| PATCH | `/tasks/:id` | Update a task (`{ "completed": true }` or `{ "title": "..." }`) |
+| POST | `/tasks` | Create a task (`{ "title": "..." }`)
+| PATCH | `/tasks/:id` | Update a task (`{ "completed": true }` or `{ "title": "..." }`)
 
 ## Project structure
 
@@ -131,3 +131,5 @@ DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
 ```
 
 When running via Docker Compose the `migrate` service handles this automatically on startup.
+
+Checked with nova-2-lite (model catalog PR, marker qx-nova-2-lite).
