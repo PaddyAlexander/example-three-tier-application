@@ -1,7 +1,7 @@
-# Task Sorting & Persistence Feature
+# Task Management Features
 
 ## Overview
-This feature allows users to sort tasks by different criteria and persists their sorting preference across sessions using localStorage.
+This document describes the task sorting, filtering, and search features that allow users to organize and find tasks efficiently. User preferences are persisted across sessions using localStorage.
 
 ## Features
 
@@ -15,6 +15,18 @@ Users can sort tasks by:
 - Click a sort button once to sort in ascending order (↑)
 - Click the same button again to toggle to descending order (↓)
 - Clicking a different sort option resets to ascending order
+
+### Filtering
+Users can filter tasks by completion status:
+- **All**: Show all tasks (default)
+- **Active**: Show only incomplete tasks
+- **Completed**: Show only completed tasks
+
+### Search
+Users can search tasks by title:
+- Type in the search box to filter tasks in real-time
+- Search is case-insensitive
+- Works in combination with status filters
 
 ### Persistence
 - Sort preferences are automatically saved to browser localStorage
@@ -69,6 +81,5 @@ GET /tasks?sort=completed&order=desc
 Potential improvements:
 - Add user preferences table in database for cross-device sync
 - Add more sort options (e.g., due date when implemented)
-- Add filter options (show only completed/incomplete)
-- Add search functionality
 - Add multi-level sorting (primary and secondary sort fields)
+- Add bulk operations (select multiple tasks, bulk delete/complete)

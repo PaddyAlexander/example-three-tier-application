@@ -33,15 +33,15 @@ Walk me through what happens when docker compose up runs, in order.
 ### Adding features
 
 ```
-Add a DELETE /tasks/:id endpoint to the API and wire it up to a delete button in the frontend.
-```
-
-```
 Add a due_date column to the tasks table. Create the migration, update the API to accept and return it, and show it in the UI.
 ```
 
 ```
 Add input validation to the POST /tasks endpoint so that titles longer than 200 characters are rejected with a 422 status.
+```
+
+```
+Add a priority field to tasks (low, medium, high) with a dropdown in the UI and a priority column in the database.
 ```
 
 ### Database migrations
