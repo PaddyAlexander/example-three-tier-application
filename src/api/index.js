@@ -1,4 +1,4 @@
-// API entry point
+// Express REST API server for task management with CRUD endpoints and PostgreSQL database integration
 const express = require('express');
 const db = require('./db');
 
