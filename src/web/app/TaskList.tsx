@@ -19,6 +19,7 @@ export default function TaskList({ initialTasks, initialSort = 'created_at', ini
   const [sortOrder, setSortOrder] = useState<OrderOption>(initialOrder);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<FilterOption>('all');
+  const [isClearing, setIsClearing] = useState(false);
 
   // Load sort preference from localStorage on mount
   useEffect(() => {
@@ -69,6 +70,22 @@ export default function TaskList({ initialTasks, initialSort = 'created_at', ini
   const getSortIcon = (field: SortOption) => {
     if (sortBy !== field) return null;
     return sortOrder === 'asc' ? '↑' : '↓';
+  };
+
+  const completedTasks = tasks.filter((t) => t.completed);
+
+  const handleClearCompleted = async () => {
+    if (isClearing) return;
+    const toDelete = completedTasks;
+    setIsClearing(true);
+    try {
+      await Promise.all(toDelete.map((t) => deleteTask(t.id)));
+    } finally {
+      // Refresh the list by dropping the deleted tasks
+      const deletedIds = new Set(toDelete.map((t) => t.id));
+      setTasks((current) => current.filter((t) => !deletedIds.has(t.id)));
+      setIsClearing(false);
+    }
   };
 
   const query = searchQuery.trim().toLowerCase();
@@ -210,9 +227,21 @@ export default function TaskList({ initialTasks, initialSort = 'created_at', ini
       </ul>
 
       {tasks.length > 0 && (
-        <p className="mt-4 text-xs text-zinc-400 text-right">
-          {tasks.filter((t) => t.completed).length} / {tasks.length} completed
-        </p>
+        <div className="mt-4 flex items-center justify-end gap-3">
+          {completedTasks.length > 0 && (
+            <button
+              type="button"
+              onClick={handleClearCompleted}
+              disabled={isClearing}
+              className="px-3 py-1 text-sm rounded-md transition-colors bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isClearing ? 'Clearing…' : 'Clear completed'}
+            </button>
+          )}
+          <p className="text-xs text-zinc-400">
+            {completedTasks.length} / {tasks.length} completed
+          </p>
+        </div>
       )}
     </>
   );
