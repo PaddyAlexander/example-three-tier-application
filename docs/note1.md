@@ -1,5 +1,7 @@
 # Note 1: Application Overview
 
+This note is part of the Forge documentation demo.
+
 This is a three-tier web application that demonstrates a complete stack architecture with a frontend, API, and database.
 
 - **Architecture**: Browser → Next.js frontend (port 3000) → Express API (port 3001) → PostgreSQL database
