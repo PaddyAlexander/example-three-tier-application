@@ -131,3 +131,8 @@ DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
 ```
 
 When running via Docker Compose the `migrate` service handles this automatically on startup.
+
+## Contributing
+
+- **Keep changes small and focused.** One pull request should do one thing, and touch one tier at a time where possible (migration, then API, then frontend).
+- **Check the app locally before opening a PR.** Run `docker compose up --build`, open [http://localhost:3000](http://localhost:3000), and confirm the app starts and the task list still works.
