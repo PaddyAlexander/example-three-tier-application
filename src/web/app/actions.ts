@@ -11,8 +11,13 @@ export type Task = {
   created_at: string;
 };
 
-export async function getTasks(): Promise<Task[]> {
-  const res = await fetch(`${API_URL}/tasks`, { cache: 'no-store' });
+export async function getTasks(sort?: string, order?: string): Promise<Task[]> {
+  const params = new URLSearchParams();
+  if (sort) params.append('sort', sort);
+  if (order) params.append('order', order);
+  
+  const url = `${API_URL}/tasks${params.toString() ? `?${params.toString()}` : ''}`;
+  const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch tasks');
   return res.json();
 }
