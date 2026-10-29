@@ -1,3 +1,4 @@
+<!-- Rules-content retest 702d17c: three-tier task application with web, API, and PostgreSQL services. -->
 <!-- Forge UI smoke test documentation and follow-up verified -->
 # example-three-tier-application
 
