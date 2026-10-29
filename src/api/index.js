@@ -3,7 +3,6 @@ const express = require('express');
 const db = require('./db');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
@@ -71,6 +70,13 @@ app.delete('/tasks/:id', async (req, res) => {
   res.status(204).send();
 });
 
-app.listen(PORT, () => {
-  console.log(`API listening on port ${PORT}`);
-});
+// Export app for testing
+module.exports = app;
+
+// Start server only when run directly
+if (require.main === module) {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`API listening on port ${PORT}`);
+  });
+}
