@@ -1,3 +1,4 @@
+<!-- A three-tier task manager app demonstrating Next.js, Express, and PostgreSQL with Docker and GCP deployment -->
 <!-- Forge UI smoke test documentation and follow-up verified -->
 # example-three-tier-application
 
