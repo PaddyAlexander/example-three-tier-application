@@ -1,0 +1,181 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Task, toggleTask, deleteTask } from './actions';
+
+type SortOption = 'created_at' | 'completed' | 'title';
+type OrderOption = 'asc' | 'desc';
+
+interface TaskListProps {
+  initialTasks: Task[];
+  initialSort?: SortOption;
+  initialOrder?: OrderOption;
+}
+
+export default function TaskList({ initialTasks, initialSort = 'created_at', initialOrder = 'asc' }: TaskListProps) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [sortBy, setSortBy] = useState<SortOption>(initialSort);
+  const [sortOrder, setSortOrder] = useState<OrderOption>(initialOrder);
+
+  // Load sort preference from localStorage on mount
+  useEffect(() => {
+    const savedSort = localStorage.getItem('taskSortBy') as SortOption;
+    const savedOrder = localStorage.getItem('taskSortOrder') as OrderOption;
+    
+    if (savedSort && ['created_at', 'completed', 'title'].includes(savedSort)) {
+      setSortBy(savedSort);
+    }
+    if (savedOrder && ['asc', 'desc'].includes(savedOrder)) {
+      setSortOrder(savedOrder);
+    }
+  }, []);
+
+  // Update tasks when initialTasks changes (after mutations) and apply sorting
+  useEffect(() => {
+    const sorted = [...initialTasks].sort((a, b) => {
+      let comparison = 0;
+      
+      if (sortBy === 'created_at') {
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      } else if (sortBy === 'completed') {
+        comparison = (a.completed === b.completed) ? 0 : a.completed ? 1 : -1;
+      } else if (sortBy === 'title') {
+        comparison = a.title.localeCompare(b.title);
+      }
+      
+      return sortOrder === 'desc' ? -comparison : comparison;
+    });
+    
+    setTasks(sorted);
+    
+    // Save to localStorage
+    localStorage.setItem('taskSortBy', sortBy);
+    localStorage.setItem('taskSortOrder', sortOrder);
+  }, [initialTasks, sortBy, sortOrder]);
+
+  const handleSortChange = (newSort: SortOption) => {
+    if (newSort === sortBy) {
+      // Toggle order if clicking the same sort option
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(newSort);
+      setSortOrder('asc');
+    }
+  };
+
+  const getSortIcon = (field: SortOption) => {
+    if (sortBy !== field) return null;
+    return sortOrder === 'asc' ? '↑' : '↓';
+  };
+
+  return (
+    <>
+      {/* Sort controls */}
+      <div className="mb-4 flex gap-2 items-center flex-wrap">
+        <span className="text-sm text-zinc-600 dark:text-zinc-400">Sort by:</span>
+        <button
+          onClick={() => handleSortChange('created_at')}
+          className={`px-3 py-1 text-sm rounded-md transition-colors ${
+            sortBy === 'created_at'
+              ? 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900'
+              : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600'
+          }`}
+        >
+          Date {getSortIcon('created_at')}
+        </button>
+        <button
+          onClick={() => handleSortChange('completed')}
+          className={`px-3 py-1 text-sm rounded-md transition-colors ${
+            sortBy === 'completed'
+              ? 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900'
+              : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600'
+          }`}
+        >
+          Status {getSortIcon('completed')}
+        </button>
+        <button
+          onClick={() => handleSortChange('title')}
+          className={`px-3 py-1 text-sm rounded-md transition-colors ${
+            sortBy === 'title'
+              ? 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900'
+              : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600'
+          }`}
+        >
+          Title {getSortIcon('title')}
+        </button>
+      </div>
+
+      {/* Task list */}
+      <ul className="space-y-2">
+        {tasks.length === 0 && (
+          <li className="text-zinc-400 text-center py-8">No tasks yet. Add one above!</li>
+        )}
+        {tasks.map((task) => (
+          <li
+            key={task.id}
+            className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3"
+          >
+            <form
+              action={async () => {
+                await toggleTask(task.id, !task.completed);
+                // Optimistically update the task
+                setTasks(tasks.map(t => 
+                  t.id === task.id ? { ...t, completed: !t.completed } : t
+                ));
+              }}
+            >
+              <button
+                type="submit"
+                className={`h-5 w-5 rounded border-2 flex-shrink-0 transition-colors ${
+                  task.completed
+                    ? 'bg-zinc-900 dark:bg-zinc-50 border-zinc-900 dark:border-zinc-50'
+                    : 'border-zinc-300 dark:border-zinc-600 hover:border-zinc-500'
+                }`}
+                aria-label={task.completed ? 'Mark incomplete' : 'Mark complete'}
+              >
+                {task.completed && (
+                  <svg viewBox="0 0 12 12" className="text-white dark:text-zinc-900 w-full h-full p-0.5">
+                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </button>
+            </form>
+            <span
+              className={`flex-1 text-sm ${
+                task.completed
+                  ? 'line-through text-zinc-400'
+                  : 'text-zinc-800 dark:text-zinc-100'
+              }`}
+            >
+              {task.title}
+            </span>
+            <form
+              action={async () => {
+                await deleteTask(task.id);
+                // Optimistically remove the task
+                setTasks(tasks.filter(t => t.id !== task.id));
+              }}
+            >
+              <button
+                type="submit"
+                className="h-5 w-5 flex-shrink-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                aria-label="Delete task"
+              >
+                <svg viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                  <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 1a.5.5 0 0 0-.5.5v1h13V1.5a.5.5 0 0 0-.5-.5h-3V1a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5v.5h-3z" />
+                </svg>
+              </button>
+            </form>
+          </li>
+        ))}
+      </ul>
+
+      {tasks.length > 0 && (
+        <p className="mt-4 text-xs text-zinc-400 text-right">
+          {tasks.filter((t) => t.completed).length} / {tasks.length} completed
+        </p>
+      )}
+    </>
+  );
+}
