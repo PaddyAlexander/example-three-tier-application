@@ -1,3 +1,4 @@
+// This is the main API server entry point for the Express application.
 // API entry point
 const express = require('express');
 const db = require('./db');
