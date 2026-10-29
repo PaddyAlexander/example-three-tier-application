@@ -131,3 +131,5 @@ DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
 ```
 
 When running via Docker Compose the `migrate` service handles this automatically on startup.
+
+Checked with kimi-k2-5 (model catalog PR, marker qx-kimi-k2-5).
