@@ -1,3 +1,4 @@
+<!-- merge-strategy-check-1793318400 -->
 <!-- Forge UI smoke test documentation and follow-up verified -->
 # example-three-tier-application
 
