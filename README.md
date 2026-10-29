@@ -67,6 +67,18 @@ The API is not exposed directly, but you can reach it through the web container 
 | POST | `/tasks` | Create a task (`{ "title": "..." }`) |
 | PATCH | `/tasks/:id` | Update a task (`{ "completed": true }` or `{ "title": "..." }`) |
 
+## Forge liveness check w2-56-f8a9
+
+To run the backend (API) tests:
+
+```bash
+cd src/api
+npm install
+npm test
+```
+
+Note: the API does not have a test suite yet. `npm test` is currently a placeholder that prints `Error: no test specified` and exits with code 1.
+
 ## Project structure
 
 ```
