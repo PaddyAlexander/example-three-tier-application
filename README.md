@@ -121,6 +121,8 @@ After apply, `terraform output web_url` gives the public URL.
 
 Migrations live in `src/db/migrations/` and use [node-pg-migrate](https://salsita.github.io/node-pg-migrate/).
 
+Checked with Qwen3 32B (model catalog PR, marker qx-1793).
+
 ```bash
 # Apply all pending migrations (run inside the db container or with DATABASE_URL set)
 cd src/db
