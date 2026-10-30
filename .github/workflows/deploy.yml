@@ -177,3 +177,4 @@ jobs:
             "${{ env.APP_NAME }}-${{ needs.build.outputs.env }}-migrate" \
             --region "${{ env.REGION }}" \
             --wait
+# Forge smoke test: permission handling
