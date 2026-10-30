@@ -28,7 +28,14 @@ app.get('/tasks', async (req, res) => {
   res.json(rows);
 });
 
-// POST /tasks — create a task
+/**
+ * POST /tasks — create a task.
+ * Expects a JSON body with a non-empty string `title` (trimmed before saving).
+ * Responds 201 with the created task, or 400 if the title is missing or blank.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
 app.post('/tasks', async (req, res) => {
   const { title } = req.body;
   if (!title || typeof title !== 'string' || !title.trim()) {
